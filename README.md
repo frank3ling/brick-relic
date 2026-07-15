@@ -17,7 +17,7 @@ By analyzing dominant color distributions and scanning diagnostic key parts, the
 
 ---
 
-BrickRelic is a free, browser-based **LEGO set identifier** and **AI brick scanner** for **AFOLs (Adult Fans of LEGO)**: point your camera at a pile of mixed bricks, and the color DNA analysis finds which sets they belong to — the perfect **LEGO sorting tool** for flea market hauls and inherited collections.
+BrickRelic is a free, browser-based **LEGO set identifier** and **AI brick scanner** for **AFOLs (Adult Fans of LEGO)** — point your camera at a pile of mixed bricks and instantly see which sets they belong to. The perfect **LEGO sorting tool** for flea market hauls and inherited collections.
 
 ## ✨ Features
 
