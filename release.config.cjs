@@ -4,24 +4,14 @@ module.exports = {
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
     [
-      '@semantic-release/changelog',
-      {
-        changelogFile: 'CHANGELOG.md',
-      },
-    ],
-    [
       '@semantic-release/npm',
       {
         npmPublish: false,
       },
     ],
-    [
-      '@semantic-release/git',
-      {
-        assets: ['package.json', 'package-lock.json', 'CHANGELOG.md'],
-        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
-      },
-    ],
+    // Tag + GitHub Release only. Kein Rück-Commit ins Repo (kein
+    // @semantic-release/git), damit der Tag stets auf einen echten
+    // Code-Commit zeigt statt auf einen leeren Version-Bump.
     [
       '@semantic-release/github',
       {
