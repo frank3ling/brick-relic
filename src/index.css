@@ -61,10 +61,12 @@ body {
   font-size: 16px;
   line-height: 1.5;
   overflow-x: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   min-height: 100vh;
+  /* Block layout + margin:auto centering. Flex centering here let .app-container keep its
+     480px max-width on narrower viewports, overflowing the page (and triggering iOS text
+     auto-inflation, "everything grows"). Block layout lets the container shrink to fit. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Scrollbar Styling */
@@ -88,6 +90,7 @@ body {
   width: 100%;
   max-width: var(--app-max-width);
   min-width: 0; /* Prevents flexbox auto-minimum width expansion from content overflow */
+  margin: 0 auto; /* Centre the mobile frame on wider viewports */
   min-height: 100vh;
   background-color: var(--bg-dark);
   border-left: 1px solid var(--border-glass);

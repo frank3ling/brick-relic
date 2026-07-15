@@ -103,3 +103,33 @@ test("header back button resets all search progress (REQ-START-003)", async ({ p
   await expect(page.locator(".found-item-card")).toHaveCount(0);
   await expect(page.locator(".found-items-empty")).toBeVisible();
 });
+
+test("scanned shelf with many parts never overflows the page horizontally (FIND-047)", async ({ page }) => {
+  // Return a DIFFERENT part on each call so scans don't dedupe — fills the shelf past its width.
+  let n = 0;
+  await page.route("https://api.brickognize.com/**", (route) => {
+    n += 1;
+    route.fulfill({
+      json: {
+        items: [{ id: `300${n}`, name: `Test Brick Number ${n} Long Name`, score: "0.9",
+          img_url: "https://cdn.rebrickable.com/media/parts/photos/1/3001-1-large.jpg" }]
+      }
+    });
+  });
+  await enterScanner(page);
+
+  for (let i = 1; i <= 4; i++) {
+    await page.locator(".scanner-viewport").click({ position: { x: 150, y: 150 } });
+    await expect(page.locator(".found-item-card")).toHaveCount(i, { timeout: 10_000 });
+  }
+
+  // The mobile frame must fit the viewport and the page must not scroll sideways,
+  // even though the shelf itself scrolls horizontally internally.
+  const { winW, docScrollW, appW } = await page.evaluate(() => ({
+    winW: window.innerWidth,
+    docScrollW: document.documentElement.scrollWidth,
+    appW: Math.round(document.querySelector(".app-container")!.getBoundingClientRect().width)
+  }));
+  expect(appW).toBeLessThanOrEqual(winW);
+  expect(docScrollW).toBeLessThanOrEqual(winW);
+});

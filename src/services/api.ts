@@ -67,6 +67,7 @@ function assembleChecklist(
     const formattedPart = toBrickPart(part);
     const matchKey = `${getBasePartNum(part.p).toLowerCase()}_${part.c}`;
     if (userScannedBaseColorKeys.has(matchKey)) {
+      formattedPart.matchedScanKey = matchKey;
       matchedParts.push(formattedPart);
       consumedScannedKeys.add(matchKey);
     } else {
@@ -92,6 +93,9 @@ function assembleChecklist(
           const setHasScannedColor = setBaseColorKeys.has(`${catalogBaseNum}_${scannedColor}`);
           if (!setHasScannedColor) {
             matchedByFallback = true;
+            // Remember the scanned entry (with its mis-classified colour) so un-marking
+            // can later remove exactly this Found Shelf part, not the catalog colour (FIND-046).
+            part.matchedScanKey = scannedKey;
             consumedScannedKeys.add(scannedKey);
             break;
           }

@@ -10,6 +10,11 @@ export interface BrickPart {
   color_id: number;
   rarity_score: number;
   imageUrl: string;
+  // For checklist parts marked "Found": the actual scanned key (base_color, lowercased)
+  // that matched this part. May differ from this part's own key when the color-independent
+  // fallback matched it (REQ-RAD-006a) — un-marking must remove THIS scanned entry, not the
+  // catalog-coloured part (REQ-RAD-007). Undefined for missing parts and shelf entries.
+  matchedScanKey?: string;
 }
 
 export interface ScannedColorInput {

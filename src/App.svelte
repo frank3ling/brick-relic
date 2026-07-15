@@ -3,7 +3,7 @@
   import SetRadar from "./components/SetRadar.svelte";
   import DigMode from "./components/DigMode.svelte";
   import PartImage from "./components/PartImage.svelte";
-  import { fetchMatchSets } from "./services/api";
+  import { fetchMatchSets, getBasePartNum } from "./services/api";
   import { loadCatalogIndex, loadCatalogMeta, resolveColor } from "./services/catalog.svelte";
   import type { BrickPart, ScannedColorInput, MatchResult } from "./services/types";
 
@@ -31,6 +31,8 @@
 
   // --- DERIVED STATE / MATCHING ---
   const partKey = (part: BrickPart) => `${part.part_num}_${part.color_id}`;
+  // The base+color key a scan is matched by (mirrors the checklist matching in api.ts).
+  const scanKey = (part: BrickPart) => `${getBasePartNum(part.part_num).toLowerCase()}_${part.color_id}`;
   let scannedPartKeys = $derived(foundParts.map(partKey));
 
   let selectedSetMatch = $derived(
@@ -83,7 +85,14 @@
   };
 
   const handleRemovePart = (part: BrickPart) => {
-    const index = foundParts.findIndex((p) => partKey(p) === partKey(part));
+    // Found Shelf "×" passes a real foundParts entry → exact identity removes it.
+    let index = foundParts.findIndex((p) => partKey(p) === partKey(part));
+    // DigMode's "Found" un-mark passes the catalog checklist part. When the color-independent
+    // fallback matched it (REQ-RAD-006a), its own key is NOT in foundParts — remove the scanned
+    // entry the checklist actually consumed instead (matchedScanKey), else the mis-tap sticks.
+    if (index === -1 && part.matchedScanKey) {
+      index = foundParts.findIndex((p) => scanKey(p) === part.matchedScanKey);
+    }
     if (index !== -1) {
       foundParts.splice(index, 1);
     }

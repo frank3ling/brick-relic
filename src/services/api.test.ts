@@ -225,6 +225,12 @@ describe("BrickRelic - Client-Side Matching Algorithm", () => {
     // checklist matching: Since 3001_0 doesn't exist in set (only 3001_15), it falls back to 3001_15!
     expect(barracuda?.matchedParts.map(p => p.part_num + "_" + p.color_id)).toContain("3001_15");
     expect(barracuda?.missingParts.map(p => p.part_num + "_" + p.color_id)).not.toContain("3001_15");
+
+    // FIND-046: the fallback-matched part must carry the ACTUAL scanned key (3001_0),
+    // not its own catalog key (3001_15) — otherwise un-marking cannot find the scanned
+    // entry in foundParts and the mis-tap sticks (REQ-RAD-007).
+    const fallbackMatched = barracuda?.matchedParts.find(p => p.part_num === "3001");
+    expect(fallbackMatched?.matchedScanKey).toBe("3001_0");
   });
 
   it("should enforce color-dependent matching when the set contains the part in both colors", async () => {
@@ -258,6 +264,10 @@ describe("BrickRelic - Client-Side Matching Algorithm", () => {
     expect(barracuda?.matchedParts.map(p => p.part_num + "_" + p.color_id)).toContain("3001_0");
     expect(barracuda?.matchedParts.map(p => p.part_num + "_" + p.color_id)).not.toContain("3001_15");
     expect(barracuda?.missingParts.map(p => p.part_num + "_" + p.color_id)).toContain("3001_15");
+
+    // Direct color match: matchedScanKey equals the part's own key (3001_0).
+    const directMatched = barracuda?.matchedParts.find(p => p.part_num === "3001");
+    expect(directMatched?.matchedScanKey).toBe("3001_0");
   });
 
   it("should be case-insensitive when matching parts in the checklist", async () => {
