@@ -9,6 +9,9 @@ permissions:
 
 jobs:
   close-pr:
+    # Dependabot update PRs stay open as reminders; apply the bump upstream,
+    # then Dependabot closes its own PR once the update lands on main.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
